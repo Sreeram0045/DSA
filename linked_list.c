@@ -1,24 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
+// created a typedef or alias for the struct
 typedef struct node NODE;
 
 struct node {
   int data;
   NODE *next;
 };
-
+// HEAD points to the first element of the linked list
 NODE *HEAD = NULL;
+
+// returns 0 if the value of HEAD is NULL otherwise 1
 int isEmpty() { return HEAD == NULL; }
+// If linkedlist is empty this function is called which in turn points head of
+// the linked list to the first element which is newNode
 void emptyLinkedList(NODE *newNode) {
   HEAD = newNode;
   newNode->next = NULL;
 }
+// a new node is created at the start where its next contains the current
+// content of HEAD then HEAD is pointed towards the new node
 void insertAtStart(NODE *newNode) {
   newNode->next = HEAD;
   HEAD = newNode;
 }
+// a new node is inserted according to the position specified by the user
 void insertBetween(NODE *newNode) {
-  int position, i = 1, flag = 0;
+  int position, i = 1;
   NODE *curr = HEAD;
   printf("Enter the position: ");
   scanf("%d", &position);
@@ -33,6 +41,7 @@ void insertBetween(NODE *newNode) {
   newNode->next = curr->next;
   curr->next = newNode;
 }
+// a new node is inserted at the end
 void insertAtEnd(NODE *newNode) {
   NODE *temp = HEAD;
   while (temp->next != NULL) {
@@ -41,6 +50,7 @@ void insertAtEnd(NODE *newNode) {
   temp->next = newNode;
   newNode->next = NULL;
 }
+// it is a caller function which calls other function based on conditionsdds
 void createNewNode() {
   int option, num;
   NODE *newNode = (NODE *)malloc(sizeof(NODE));
@@ -64,11 +74,13 @@ void createNewNode() {
     insertAtEnd(newNode);
   }
 }
+// Deletes the node at the beginning
 void deleteAtBeginning() {
   NODE *temp = HEAD;
   HEAD = temp->next;
   free(temp);
 }
+// Deletes the node at a specified position
 void deleteAtPosition() {
   int position, i = 1, flag = 0;
   NODE *curr = HEAD;
@@ -91,6 +103,7 @@ void deleteAtPosition() {
   }
   free(curr);
 }
+// Deletes the node at the end
 void deleteAtEnd() {
   if (HEAD->next == NULL) {
     free(HEAD);
@@ -106,6 +119,8 @@ void deleteAtEnd() {
   prev->next = NULL;
   free(curr);
 }
+// This is a caller function which calls delete functions based on certain
+// conditions
 void deleteNode() {
   int option;
   if (isEmpty()) {
@@ -123,6 +138,7 @@ void deleteNode() {
     deleteAtEnd();
   }
 }
+// Prints the element each node stores in the linked list
 void traversal() {
   NODE *temp = HEAD;
   if (isEmpty()) {
@@ -136,6 +152,7 @@ void traversal() {
   }
   printf("\n");
 }
+// The function which runs the whole circus
 void play() {
   int option;
   while (1) {
