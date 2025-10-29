@@ -22,45 +22,72 @@ NODE *createNewNode(int num) {
   newNode->num = num;
   return newNode;
 }
-NODE *recursiveSearchingForPosition(int num, NODE **pointer) {
-  if (*pointer == NULL || (*pointer)->num == num) {
+NODE *insertRecursively(int num, NODE *pointer) {
+  if (pointer == NULL) {
     return createNewNode(num);
-  } else if (num < (*pointer)->num) {
-    (*pointer)->left = recursiveSearchingForPosition(num, &(*pointer)->left);
-  } else if (num > (*pointer)->num) {
-    (*pointer)->right = recursiveSearchingForPosition(num, &(*pointer)->right);
   }
-  return *pointer;
+  if (num == pointer->num) {
+    printf("Duplicate %d skipped.\n", num);
+    return pointer;
+  }
+  if (num < pointer->num) {
+    pointer->left = insertRecursively(num, pointer->left);
+  } else {
+    pointer->right = insertRecursively(num, pointer->right);
+  }
+  return pointer;
 }
 void insertNewNode(NODE **ROOT) {
   int num;
   printf("Enter the number: ");
   scanf("%d", &num);
-  *ROOT = recursiveSearchingForPosition(num, ROOT);
+  *ROOT = insertRecursively(num, *ROOT);
 }
+
 NODE *deleteNode(int num, NODE **ROOT) {
-  if (num == (*ROOT)->num || ROOT == NULL) {
+  if (*ROOT == NULL) {
+    printf("Element not found");
+    return NULL;
+  }
+  if ((*ROOT)->num < num) {
+    (*ROOT)->right = deleteNode(num, &(*ROOT)->right);
+  } else if ((*ROOT)->num > num) {
+    (*ROOT)->left = deleteNode(num, &(*ROOT)->left);
+  } else {
+    // Case 1: No child
     if ((*ROOT)->left == NULL && (*ROOT)->right == NULL) {
-      printf("Number deleted\n");
       free(*ROOT);
+      *ROOT = NULL;
       return NULL;
+    }
+    // Case 2: Single Child
+    if ((*ROOT)->left == NULL) {
+      NODE *temp = (*ROOT)->right;
+      free(*ROOT);
+      *ROOT = temp;
+      return temp;
+    } else if ((*ROOT)->right == NULL) {
+      NODE *temp = (*ROOT)->left;
+      free(*ROOT);
+      *ROOT = temp;
+      return temp;
     } else {
-      if ((*ROOT)->left == NULL) {
-        (*ROOT)->num = ((*ROOT)->right)->num;
-        printf("Number deleted from right node\n");
-        free((*ROOT)->right);
-        (*ROOT)->right = NULL;
-      } else if ((*ROOT)->right == NULL) {
-        printf("Number deleted from left node\n");
-        (*ROOT)->num = ((*ROOT)->left)->num;
-        free((*ROOT)->left);
-        (*ROOT)->left = NULL;
+      NODE *succ = (*ROOT)->right;
+      NODE *succparent = *ROOT;
+
+      while (succ->left != NULL) {
+        succparent = succ;
+        succ = succ->left;
+      }
+
+      (*ROOT)->num = succ->num;
+
+      if (succparent == *ROOT) {
+        succparent->right = deleteNode(succ->num, &succparent->right);
+      } else {
+        succparent->left = deleteNode(succ->num, &succparent->left);
       }
     }
-  } else if ((*ROOT)->num < num) {
-    (*ROOT)->right = deleteNode(num, &(*ROOT)->right);
-  } else {
-    (*ROOT)->left = deleteNode(num, &(*ROOT)->left);
   }
   return *ROOT;
 }
@@ -68,7 +95,7 @@ void deleteNodeCaller(NODE **ROOT) {
   int num;
   printf("Enter the number for deletion: ");
   scanf("%d", &num);
-  deleteNode(num, &*ROOT);
+  deleteNode(num, ROOT);
 }
 void inorderTraversal(NODE *pointer) {
   if (pointer != NULL) {
