@@ -16,6 +16,10 @@ bool isEmpty() { return REAR == NULL && FRONT == NULL; }
 void enqueue() {
   int value;
   Node *newNode = (Node *)malloc(sizeof(Node));
+  if (newNode == NULL) {
+    printf("Dynamic Memory allocation failed");
+    exit(0);
+  }
   printf("Enter the number: ");
   scanf("%d", &value);
   newNode->val = value;
@@ -28,6 +32,8 @@ void enqueue() {
     REAR->next = newNode;
     REAR = newNode;
   }
+  // For Debugging
+  // printf("%d %d\n", REAR->val, FRONT->val);
 }
 void dequeue() {
   if (isEmpty()) {
@@ -51,10 +57,26 @@ void peek() {
   }
   printf("Element at the Front: %d\n", FRONT->val);
 }
+void display() {
+  if (isEmpty()) {
+    printf("Queue is empty\n");
+    return;
+  }
+  printf("Queue printed from backwards: ");
+  Node *temp = FRONT;
+  while (temp != NULL) {
+    printf("%d ", temp->val);
+    temp = temp->next;
+    if (temp == FRONT) {
+      break;
+    }
+  }
+  printf("\n");
+}
 int main() {
   int choice;
   while (true) {
-    printf("1.Enqueue\n2.Dequeue\n3.Peek\n4.Exit\n");
+    printf("1.Enqueue\n2.Dequeue\n3.Peek\n4.Display\n5.Exit\n");
     scanf("%d", &choice);
     switch (choice) {
     case 1:
@@ -67,7 +89,10 @@ int main() {
       peek();
       break;
     case 4:
-      printf("Exiting...");
+      display();
+      break;
+    case 5:
+      printf("Exiting...\n");
       exit(0);
     default:
       printf("Invalid option\n");
